@@ -1,0 +1,162 @@
+from pathlib import Path
+
+html = r'''<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Help Assistant</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+body{background:#f4f7fb;color:#172033}
+header{background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;padding:22px 7%;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.logo{font-size:25px;font-weight:bold}
+nav a{color:#fff;text-decoration:none;margin-left:20px;font-weight:600}
+.hero{min-height:430px;display:flex;justify-content:center;align-items:center;text-align:center;padding:50px 20px;background:linear-gradient(135deg,#eaf2ff,#f4eefe)}
+.hero-content{max-width:800px}
+.hero h1{font-size:52px;margin-bottom:18px}
+.hero h1 span{color:#2563eb}
+.hero p{font-size:19px;color:#5b6475;line-height:1.6;margin-bottom:28px}
+.btn{display:inline-block;border:0;background:#2563eb;color:#fff;padding:14px 25px;border-radius:10px;text-decoration:none;cursor:pointer;font-size:16px;font-weight:bold}
+section{padding:70px 7%}
+.section-title{text-align:center;margin-bottom:40px}
+.section-title h2{font-size:35px;margin-bottom:10px}
+.section-title p{color:#667085}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px}
+.card{background:#fff;padding:28px;border-radius:18px;box-shadow:0 8px 25px rgba(0,0,0,.07);transition:.25s}
+.card:hover{transform:translateY(-5px)}
+.card-icon{font-size:38px;margin-bottom:15px}
+.card h3{margin-bottom:10px}.card p{color:#667085;line-height:1.5}
+.assistant{max-width:850px;margin:auto;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 10px 35px rgba(0,0,0,.09)}
+.chat-header{background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;padding:20px;font-size:20px;font-weight:bold}
+.chat-box{height:360px;overflow-y:auto;padding:20px;background:#f8fafc}
+.message{max-width:75%;padding:12px 15px;border-radius:15px;margin-bottom:12px;line-height:1.45}
+.bot{background:#e8eefc;margin-right:auto}.user{background:#2563eb;color:#fff;margin-left:auto}
+.chat-input{display:flex;padding:15px;gap:10px;border-top:1px solid #eee}
+.chat-input input{flex:1;padding:14px;border:1px solid #d0d5dd;border-radius:10px;outline:none}
+.chat-input button{padding:0 20px;border:0;background:#2563eb;color:#fff;border-radius:10px;cursor:pointer;font-weight:bold}
+.faq{max-width:850px;margin:auto}.faq-item{background:#fff;margin-bottom:12px;border-radius:12px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,.05)}
+.faq-question{padding:18px;cursor:pointer;font-weight:bold}.faq-answer{display:none;padding:0 18px 18px;color:#667085;line-height:1.5}
+.faq-item.active .faq-answer{display:block}
+.contact{background:#111827;color:#fff;text-align:center}.contact p{color:#cbd5e1;margin:10px 0 25px}
+footer{background:#0b1120;color:#94a3b8;text-align:center;padding:20px}
+@media(max-width:700px){
+header{flex-direction:column;gap:15px}nav a{margin:0 6px;font-size:14px}
+.hero h1{font-size:38px}.hero p{font-size:16px}section{padding:50px 5%}.message{max-width:90%}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🤝 Help Assistant</div>
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#assistant">Assistant</a>
+    <a href="#help">Help</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<section class="hero" id="home">
+  <div class="hero-content">
+    <h1>Your <span>Personal Help Assistant</span></h1>
+    <p>Need help? Ask a question and get a quick answer. Explore helpful resources and frequently asked questions.</p>
+    <a href="#assistant" class="btn">Start Assistant</a>
+  </div>
+</section>
+
+<section id="help">
+  <div class="section-title"><h2>How Can We Help?</h2><p>Choose an option below.</p></div>
+  <div class="cards">
+    <div class="card"><div class="card-icon">💬</div><h3>Ask a Question</h3><p>Send your question to the Help Assistant.</p></div>
+    <div class="card"><div class="card-icon">📚</div><h3>Learning Help</h3><p>Get simple explanations and useful learning resources.</p></div>
+    <div class="card"><div class="card-icon">💻</div><h3>Technology Help</h3><p>Get help with computers, websites and basic technology.</p></div>
+    <div class="card"><div class="card-icon">🛠️</div><h3>General Help</h3><p>Ask about everyday problems and find useful solutions.</p></div>
+  </div>
+</section>
+
+<section id="assistant">
+  <div class="section-title"><h2>💬 Help Assistant</h2><p>Type your question below.</p></div>
+  <div class="assistant">
+    <div class="chat-header">🤖 Help Assistant</div>
+    <div class="chat-box" id="chatBox">
+      <div class="message bot">Hello! 👋 I'm your Help Assistant. How can I help you?</div>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="userInput" placeholder="Type your question..." autocomplete="off">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-title"><h2>❓ Frequently Asked Questions</h2><p>Find quick answers.</p></div>
+  <div class="faq">
+    <div class="faq-item"><div class="faq-question">How do I use the assistant?</div><div class="faq-answer">Type your question in the message box and press Send.</div></div>
+    <div class="faq-item"><div class="faq-question">Can I use this website on a phone?</div><div class="faq-answer">Yes. The website works on phones, tablets and computers.</div></div>
+    <div class="faq-item"><div class="faq-question">Can I add more questions?</div><div class="faq-answer">Yes. You can add more FAQ questions and answers to this file.</div></div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <h2>📞 Need More Help?</h2>
+  <p>Contact us if you need additional assistance.</p>
+  <a class="btn" href="mailto:your-email@example.com">Contact Us</a>
+</section>
+
+<footer>© <span id="year"></span> Help Assistant. All Rights Reserved.</footer>
+
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+
+function sendMessage(){
+  const input=document.getElementById("userInput");
+  const chatBox=document.getElementById("chatBox");
+  const message=input.value.trim();
+  if(!message)return;
+
+  const user=document.createElement("div");
+  user.className="message user";
+  user.textContent=message;
+  chatBox.appendChild(user);
+  input.value="";
+  chatBox.scrollTop=chatBox.scrollHeight;
+
+  setTimeout(()=>{
+    const bot=document.createElement("div");
+    bot.className="message bot";
+    bot.textContent=getAnswer(message);
+    chatBox.appendChild(bot);
+    chatBox.scrollTop=chatBox.scrollHeight;
+  },500);
+}
+
+document.getElementById("userInput").addEventListener("keydown",e=>{
+  if(e.key==="Enter")sendMessage();
+});
+
+function getAnswer(message){
+  const text=message.toLowerCase();
+
+  if(/hello|hi|hey/.test(text)) return "Hello! 👋 How can I help you today?";
+  if(/help|problem/.test(text)) return "Sure! Tell me more about your problem and I'll try to help.";
+  if(/computer|pc|laptop/.test(text)) return "For computer problems, tell me what happened and what error you see.";
+  if(/website|web/.test(text)) return "I can help with basic website questions. Tell me what you want to do.";
+  if(/school|study|lesson/.test(text)) return "I can help explain study topics. Send me the subject or question.";
+  if(/thank/.test(text)) return "You're welcome! 😊";
+  return "Thanks for your question! Please give me a little more information so I can help you better.";
+}
+
+document.querySelectorAll(".faq-question").forEach(q=>{
+  q.addEventListener("click",()=>q.parentElement.classList.toggle("active"));
+});
+</script>
+
+</body>
+</html>
+'''
+
+path = Path("/mnt/data/index.html")
+path.write_text(html, encoding="utf-8")
+print(f"Created: {path}")
